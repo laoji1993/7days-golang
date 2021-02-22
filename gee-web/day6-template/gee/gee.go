@@ -20,7 +20,7 @@ type (
 		*RouterGroup
 		router        *router
 		groups        []*RouterGroup
-		htmlTemplates *template.HTML
+		htmlTemplates *template.Template
 		funcMap       template.FuncMap
 	}
 )
@@ -88,6 +88,15 @@ func (group *RouterGroup) Static(relativePath string, root string) {
 	urlPattern := path.Join(relativePath, "/*filepath")
 	// Register GET handlers
 	group.GET(urlPattern, handler)
+}
+
+// for custom render function
+func (engine *Engine) SetFuncMap(funcMap template.FuncMap)  {
+	engine.funcMap = funcMap
+}
+
+func (engine *Engine) LoadHTMLGLOB(pattern string)  {
+	engine.htmlTemplates = template.Must(template.New("").Funcs(engine.funcMap).ParseGlob(pattern))
 }
 
 // Run defines the method to start a http server
